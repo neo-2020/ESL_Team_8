@@ -29,8 +29,54 @@
 
 bool demo_done;
 
+char pckType;
+#define P_Size 8
+#define P_Header 0b10100000
+#define P_headerCheck 0b00001010
+
+struct packet{
+	uint8_t head;
+	uint8_t pck_Type;
+	int8_t roll;
+	int8_t pitch;
+	int8_t yaw;
+	int8_t lift;
+	uint16_t crc;
+} pc_drone;
+
+struct dronepck{
+	uint8_t head;
+	uint8_t pckType;
+	uint8_t dt1_1;
+	uint8_t dt1_2;
+	uint8_t dt2_1;
+	uint8_t dt2_2;
+	uint8_t dt3_1;
+	uint8_t dt3_2;
+	uint8_t dt4_1;
+	uint8_t dt4_2;
+} drone_pc;
+
+uint8_t brokenPck[P_Size];
+
+uint8_t mode;
+int panic;
+int batFlag;
+uint8_t timestamp;
+
+struct mode_packet{
+	char head_p;
+	uint8_t mode_p;
+	char ender_p;
+}mode_packet_change;
+bool mode_change_acknowledged;
+uint8_t prevAckMode;
+
 // Control
 int16_t motor[4],ae[4];
+int32_t kp, kp1, kp2;
+int32_t kp_yaw, kp1_roll, kp2_roll, kp1_pitch, kp2_pitch;
+int32_t pitch_error, yaw_error, roll_error, lift_error;
 void run_filters_and_control();
 
 // Timers
@@ -106,5 +152,28 @@ queue ble_tx_queue;
 volatile bool radio_active;
 void ble_init(void);
 void ble_send(void);
+
+//dront_to_pc file functions - protocol function
+uint16_t compute_crc(const uint8_t *pck_data, uint32_t size, const uint16_t *pck_crc);
+void send_mode_change();
+void set_acknowledge_flag(bool ack_flag);
+void init_send_mode_change();
+void send_packet(char type);
+void packet_on_queue();
+void set_pckType(char temp);
+void mode_change_packet();
+void motor_packet();
+void kp_packet();
+void set_Header();
+bool check_crc();
+bool nxt_packet();
+uint8_t mode_set();
+void restore_packet();
+void pckType_check();
+bool brokenPckt_check();
+void header_brokenpckt();
+void restore_brokenPckt();
+bool headerCheck(uint8 h);
+uint8_t read_packte();
 
 #endif // IN4073_H__
