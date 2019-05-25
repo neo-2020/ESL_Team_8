@@ -32,6 +32,29 @@ bool demo_done;
 // Control
 int16_t motor[4],ae[4];
 void run_filters_and_control();
+int32_t	lift, roll, pitch, yaw;
+int32_t kp, kp1,kp2;
+int32_t err_pitch, err_roll, err_lift, err_yaw;
+int32_t cp, cq, cr;
+
+bool mode_change_acknowledged;
+int p_Flag;
+int rawFlag ;
+int lost_connectFlag;
+uint8_t prevAcknowledgeMode;
+void (*mode_function)(void);
+
+//mode
+uint8_t pre_mode;
+void panic_mode(void);
+void safe_mode(void);
+void manual_mode(void);
+void calib_mode(void);
+void switch_mode(int);
+void yaw_mode(void);
+void full_mode(void);
+void raw_mode(void);
+void height_mode(void);
 
 // Timers
 #define TIMER_PERIOD	50 //50ms=20Hz (MAX 23bit, 4.6h)
