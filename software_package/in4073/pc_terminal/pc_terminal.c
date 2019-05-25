@@ -349,14 +349,14 @@ uint8_t read_pckt()
 	}
 
 	drone_to_pc.pcktType = dequeue(&recQu);
-	drone_to_pc.dt1_1 = dequeue(recQu);
-	drone_to_pc.dt1_2 = dequeue(recQu);
-	drone_to_pc.dt2_1 = dequeue(recQu);
-	drone_to_pc.dt2_2 = dequeue(recQu);
-	drone_to_pc.dt3_1 = dequeue(recQu);
-	drone_to_pc.dt3_2 = dequeue(recQu);
-	drone_to_pc.dt4_1 = dequeue(recQu);
-	drone_to_pc.dt4_2 = dequeue(recQu);
+	drone_to_pc.dt1_1 = dequeue(&recQu);
+	drone_to_pc.dt1_2 = dequeue(&recQu);
+	drone_to_pc.dt2_1 = dequeue(&recQu);
+	drone_to_pc.dt2_2 = dequeue(&recQu);
+	drone_to_pc.dt3_1 = dequeue(&recQu);
+	drone_to_pc.dt3_2 = dequeue(&recQu);
+	drone_to_pc.dt4_1 = dequeue(&recQu);
+	drone_to_pc.dt4_2 = dequeue(&recQu);
 
 	uint8_t tempMode = (uint8_t) drone_to_pc.head;
 	tempMode = tempMode << 4;
