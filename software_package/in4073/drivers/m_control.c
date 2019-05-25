@@ -26,7 +26,7 @@ void panic_mode(void){
     //Time Delay
     for(int i=0;i<=400;i++) send_packet('o');
 
-    b=b+b;
+    //b=b+b;
     p_Flag = false;
 
     if(!lost_connectFlag){
@@ -68,7 +68,7 @@ void yaw_mode(void){
 			get_dmp_data();
 		}
     //TODO Function name not certain
-	calculate_yaw_control();
+	yaw_cal();
 	calculateMotorRPM();
 	update_motors();
 }
@@ -81,7 +81,7 @@ void full_mode(void){
 			get_dmp_data();
 		}
     //TODO Function name not certain
-	calculate_roll_control();
+	roll_cal();
 	calculateMotorRPM();
 	update_motors();
 }
@@ -93,7 +93,7 @@ void raw_mode(void){
 	get_raw_sensor_data();
 	filter_function();
 
-	rowControl();
+	raw_ctrl();
 	calculateMotorRPM();
 	update_motors();
 }
@@ -102,7 +102,7 @@ void raw_mode(void){
 // Function for height control (mode 7)
 void height_mode(void){
 	read_baro();
-	heightControl();
+	height_ctrl();
 	calculateMotorRPM();
 	update_motors();
 }
@@ -112,34 +112,34 @@ void switch_mode(int mode_input){
     switch(mode_input)
     {
         case 0:
-			packet_type_char = 'm';
+			type_pck = 'm';
 			mode_function = &safe_mode;
 			break;
 		case 1:
-			packet_type_char = 'o';
+			type_pck = 'o';
 			rawFlag=0;		
 			prevAcknowledgeMode = 1;
 			mode_function = &panic_mode;
 			break;
 		case 2:
-			packet_type_char = 'm';
+			type_pck = 'm';
 			mode_function = &manual_mode;
 			break;
 		case 3:
-			packet_type_char = 'c';
+			type_pck = 'c';
 			rawFlag=0;				
 			prevAcknowledgeMode = 3;
 			//buffer_fill_index = 0;
 			mode_function = &cali_mode;
 			break;
 		case 4:
-			packet_type_char = 'm';
+			type_pck = 'm';
 			rawFlag=0;		
 			mode_function = &yaw_mode;
 			break;
 
 		case 5:
-			packet_type_char = 'k';
+			type_pck = 'k';
 			timestamp = 0;
 			rawFlag=0;		
 

@@ -50,7 +50,7 @@ uint8_t read_packte()
 
 //check for header
 
-bool headerCheck(uint8 h)
+bool headerCheck(uint8_t h)
 {
     bool flag = false;
     char c = h;
@@ -260,13 +260,13 @@ void kp_packet()
 void motor_packet()
 {
     drone_pc.dt1_1 = (uint8_t)((motor[0] & 0xFF00) >> 8);
-    drone_pc.dt1_2 = (uint8_t)((motor[0] & 0x00FF) ;
+    drone_pc.dt1_2 = (uint8_t)(motor[0] & 0x00FF);
     drone_pc.dt2_1 = (uint8_t)((motor[1] & 0xFF00) >> 8);
-    drone_pc.dt2_2 = (uint8_t)((motor[1] & 0x00FF);
+    drone_pc.dt2_2 = (uint8_t)(motor[1] & 0x00FF);
     drone_pc.dt3_1 = (uint8_t)((motor[2] & 0xFF00) >> 8);
-    drone_pc.dt3_2 = (uint8_t)((motor[2] & 0x00FF);
+    drone_pc.dt3_2 = (uint8_t)(motor[2] & 0x00FF);
     drone_pc.dt4_1 = (uint8_t)((motor[3] & 0xFF00) >> 8);
-    drone_pc.dt4_2 = (uint8_t)((motor[3] & 0x00FF);
+    drone_pc.dt4_2 = (uint8_t)(motor[3] & 0x00FF);
 }
 
 //mode change packet
@@ -320,7 +320,7 @@ void packet_on_queue()
     enqueue(&tx_queue, drone_pc.dt3_1);
     enqueue(&tx_queue, drone_pc.dt3_2);
     enqueue(&tx_queue, drone_pc.dt4_1);
-    enqueue(&tx_queue, drone_pc.dt4_2;
+    enqueue(&tx_queue, drone_pc.dt4_2);
 }
 
 //packet send

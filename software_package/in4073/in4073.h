@@ -33,7 +33,7 @@ char pckType;
 #define P_Size 8
 #define P_Header 0b10100000
 #define P_headerCheck 0b00001010
-
+char type_pck;
 struct packet{
 	uint8_t head;
 	uint8_t pck_Type;
@@ -79,9 +79,10 @@ int32_t kp_yaw, kp1_roll, kp2_roll, kp1_pitch, kp2_pitch;
 int32_t pitch_error, yaw_error, roll_error, lift_error;
 void run_filters_and_control();
 int32_t	lift, roll, pitch, yaw;
-int32_t kp, kp1,kp2;
 int32_t err_pitch, err_roll, err_lift, err_yaw;
-int32_t cp, cq, cr;
+int32_t cali_p, cali_q, cali_r;
+int32_t cali_phi,cali_theta,cali_pressure
+
 
 bool mode_change_acknowledged;
 int p_Flag;
@@ -90,6 +91,20 @@ int lost_connectFlag;
 uint8_t prevAcknowledgeMode;
 void (*mode_function)(void);
 
+
+void raw_ctrl(void);
+void height_ctrl(void);
+void roll_cal(void);
+void yaw_cal(void);
+
+
+//filter
+int16_t p_est;
+int16_t q_est;
+int16_t theta_est;
+int16_t phi_est;
+
+int16_t r_butter;
 //mode
 uint8_t pre_mode;
 void panic_mode(void);
@@ -101,6 +116,10 @@ void yaw_mode(void);
 void full_mode(void);
 void raw_mode(void);
 void height_mode(void);
+
+
+
+
 
 // Timers
 #define TIMER_PERIOD	50 //50ms=20Hz (MAX 23bit, 4.6h)

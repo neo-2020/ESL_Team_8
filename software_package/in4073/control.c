@@ -16,9 +16,24 @@
 #include <stdint.h>
 #include <unistd.h>
 
+
+#define shift_lift 1
 //p
 #define RATE_SHIFT_YAW 0
 #define RATE_GAIN_SHIFT_YAW 0
+
+//p1
+#define shift_ang 0
+#define shift_ang_gain 0
+
+//p2
+#define shift_rate 0
+#define shift_rate_gain 0
+
+//height_control
+#define shift_rate_hgt 0
+#define shift_rate_gain_hgt
+
 
 //SPEED CONTROL
 #define MAX_SPEED 450
@@ -52,14 +67,14 @@ void run_filters_and_control()
 /*#####################  Yaw Control  ###################*/
 //Written by Yuhao
 
-void calculate_yaw_control(){
+void yaw_cal(){
 
 	if(kp<1) kp=1;
-	lift = (int32_t)-1*(values_Packet.yaw*256);
-	roll = (int32_t)values_Packet.roll*256;
-	pitch = (int32_t)values_Packet.pitch*256;
+	lift = (int32_t)-1*(pc_drone.yaw*256);
+	roll = (int32_t)pc_drone.roll*256;
+	pitch = (int32_t)pc_drone.pitch*256;
 
-	err_yaw = (((int32_t)values_Packet.yaw*256)>>RATE_SHIFT_YAW)+((sr-cr)>>RATE_SHIFT_YAW);
+	err_yaw = (((int32_t)pc_drone.yaw*256)>>RATE_SHIFT_YAW)+((sr-cali_r)>>RATE_SHIFT_YAW);
 	yaw = (kp*err_yaw)>>RATE_GAIN_SHIFT_YAW;
 }
 
@@ -68,16 +83,16 @@ void calculate_yaw_control(){
 
 /*#################### Full Control ####################*/
 //Written by Yuhao
-void calculate_roll_control(){
-	lift = (int32_t)-1*(values_Packet.lift-127)*256;
+void roll_cal(){
+	lift = (((int32_t)-1 * (pc_drone.lift -127)*256)>>shift_lift);
 
-	err_roll = ((((int32_t)values_Packet.roll*256)/4)-((phi-cphi)>>ANGLE_SHIFT));
-	roll = ((kp1*err_roll)>>ANGLE_GAIN_SHIFT)-(kp2*(sq-cq)>>RATE_SHIFT)>>RATE_GAIN_SHIFT;
+	err_roll = ((((int32_t)pc_drone.roll*256)/4)-((phi-cali_phi)>>shift_ang));
+	roll = ((kp1*err_roll)>>shift_ang_gain)-(kp2*(sq-cali_q)>>shift_rate)>>shift_rate_gain;
 
-	err_pitch = ((((int32_t)values_Packet.pitch*256)/4)-((theta-ctheta)>>ANGLE_SHIFT));
-	pitch = ((kp1*err_pitch)>>ANGLE_GAIN_SHIFT) + (kp2*((sq-cq)>>RATE_SHIFT)>>RATE_GAIN_SHIFT);
+	err_pitch = ((((int32_t)pc_drone.pitch*256)/4)-((theta-cali_theta)>>shift_ang));
+	pitch = ((kp1*err_pitch)>>shift_ang_gain) + (kp2*((sq-cali_q)>>shift_rate)>>shift_rate_gain);
 
-	err_yaw = (((int32_t)values_Packet.yaw*256)/4)-((sr-cr)>>RATE_SHIFT_YAW);
+	err_yaw = (((int32_t)pc_drone.yaw*256)/4)-((sr-cali_r)>>RATE_SHIFT_YAW);
 	yaw = (kp*err_yaw)>>RATE_GAIN_SHIFT_YAW;
 }
 
@@ -85,29 +100,29 @@ void calculate_roll_control(){
 
 /*#################### Raw Control #####################*/
 //Written by Yuhao
-void rawControl(){
-	lift = (int32_t)-1*(values_Packet.lift-127)*256;
+void raw_ctr(){
+	lift = (int32_t)-1*(pc_drone.lift-127)*256;
 
-	err_roll = ((((int32_t)values_Packet.roll*256)/4)-((phi_est-cphi)>>ANGLE_SHIFT));
-	roll = ((err_roll*kp1)>>ANGLE_GAIN_SHIFT)-((((p_est-cp)>>RATE_SHIFT)*kp2)>>RATE_GAIN_SHIFT);
+	err_roll = ((((int32_t)pc_drone.roll*256)/4)-((phi_est-cali_phi)>>shift_ang));
+	roll = ((err_roll*kp1)>>shift_ang_gain)-((((p_est-cali_p)>>shift_rate)*kp2)>>shift_rate_gain);
 
-	err_pitch = ((((int32_t)values_Packet.pitch*256)/4)-((theta_est-ctheta)>>ANGLE_SHIFT));
-	pitch = ((err_pitch*kp1)>>ANGLE_GAIN_SHIFT)-((((q_est-cq)>>RATE_SHIFT)*kp2)>>RATE_GAIN_SHIFT);
+	err_pitch = ((((int32_t)pc_drone.pitch*256)/4)-((theta_est-cali_theta)>>shift_ang));
+	pitch = ((err_pitch*kp1)>>shift_ang_gain)-((((q_est-cali_q)>>shift_rate)*kp2)>>shift_rate_gain);
 
-	err_yaw = (((int32_t)values_Packet.yaw*256)/4)-((r_butter-cr)>>RATE_SHIFT_YAW);
+	err_yaw = (((int32_t)pc_drone.yaw*256)/4)-((r_butter-cali_r)>>RATE_SHIFT_YAW);
 	yaw = ((err_yaw*kp)>>RATE_GAIN_SHIFT_YAW);
 }
 
 
 /*#################### Height Control ##################*/
 //Written by Yuhao
-void heightControl(){
+void height_ctr(){
 
-	err_lift = (((int32_t)-1*(values_Packet.lift-127)*256)>>RATE_SHIFT_PRESS)-((pressure-cpressure)>>RATE_SHIFT_PRESS);
-	lift = kp*err_lift>>RATE_GAIN_SHIFT_PRESS;
-	roll = (int32_t)values_Packet.roll*256;
-	pitch = (int32_t)values_Packet.pitch*256;
-	yaw = (int32_t)values_Packet.yaw*256;
+	err_lift = (((int32_t)-1*(pc_drone.lift-127)*256)>>shift_rate_hgt)-((pressure-cali_pressure)>>shift_rate_hgt);
+	lift = kp*err_lift>>shift_rate_gain_hgt;
+	roll = (int32_t)pc_drone.roll*256;
+	pitch = (int32_t)pc_drone.pitch*256;
+	yaw = (int32_t)pc_drone.yaw*256;
 	}
 
 
@@ -116,18 +131,18 @@ Written by Yuhao*/
 void calculateMoterRPM(){
 	int32_t v0,v1,v2,v3;
 
-	int32_t b =1;
-	int32_t d = 1;
+	int32_t a = 1;
+	int32_t b = 1;
 
 	int mul_fac=6;
 	int minMV = 150;
 	int maxMV = 900;
 	
 
-	v0 = (lift / b + 2 * pitch / b - yaw / d) / 4;
-	v1 = (lift / b - 2 * roll / b + yaw / d) / 4;
-	v2 = (lift / b - 2 * pitch / b - yaw / d) / 4;
-	v3 = (lift / b + 2 * roll / b + yaw / d) / 4;
+	v0 = (lift / a + 2 * pitch / a - yaw / b) / 4;
+	v1 = (lift / a - 2 * roll / a + yaw / b) / 4;
+	v2 = (lift / a - 2 * pitch / a - yaw / b) / 4;
+	v3 = (lift / a + 2 * roll / a + yaw / b) / 4;
 
 
 	if (v0<0) v0 = 0;
