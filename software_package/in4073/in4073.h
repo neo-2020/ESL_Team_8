@@ -107,6 +107,7 @@ int16_t phi_est;
 int16_t r_butter;
 //mode
 uint8_t pre_mode;
+//void switch_mode(void);
 void panic_mode(void);
 void safe_mode(void);
 void manual_mode(void);

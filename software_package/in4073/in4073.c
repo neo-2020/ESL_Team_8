@@ -14,7 +14,8 @@
  */
 
 #include "in4073.h"
-
+#include <stdio.h>
+#include <string.h>
 /*------------------------------------------------------------------
  * process_key -- process command keys
  *------------------------------------------------------------------
@@ -61,6 +62,9 @@ void process_key(uint8_t c)
 
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
+ * 
+ * Modify by Yuhao, some part refer to last yearś code
+ * date 11/5/2019
  *------------------------------------------------------------------
  */
 int main(void)
@@ -73,35 +77,92 @@ int main(void)
 	imu_init(true, 100);	
 	baro_init();
 	spi_flash_init();
-	ble_init();
+	//ble_init();
 
+	uint32_t time_diff;
 	uint32_t counter = 0;
+	uint32_t no_packet = 0;
+	
 	demo_done = false;
+
+	switch_mode(0);
+
+	//pckType = 'v';
+
+	flushQueue(&rx_queue);
+	flushQueue(&tx_queue);
+
+	timestamp = get_time_us();
+	uint32_t start_time_msg = get_time_us();
 
 	while (!demo_done)
 	{
-		if (rx_queue.count) process_key( dequeue(&rx_queue) );
+		if (rx_queue.count>7){
+			if (pre_mode != read_packet()){
+				switch_mode(mode);
+			}
+			no_packet =0;
+		}
+		else
+		{
+			no_packet ++;
+		}
 
+		if (no_packet ==250)
+		{
+			if(mode!=0)
+			{
+				lost_connectFlag = 1;
+				mode = 1;
+				p_Flag = 1;
+			}
+		}
+		/*		
+		#ifdef BATTERYCHECK
+		batteryMonitor();
+		if(!batteryFlag)
+		{
+			if(mode!=0) {printf("\nLow Battery! Panic Mode\n"); mode=1; panicFlag=1;}
+			else {printf("\nLow Battery! Aborting ...\n"); demo_done=true;}
+		}
+		#endif
+		*/
+		if (p_Flag)
+		{
+			panic_mode();
+		}
+		mode_function();
+		
+		//Copy from last yearś code
 		if (check_timer_flag()) 
 		{
 			if (counter++%20 == 0) nrf_gpio_pin_toggle(BLUE);
 
 			adc_request_sample();
 			read_baro();
-
-			printf("%10ld | ", get_time_us());
-			printf("%3d %3d %3d %3d | ",ae[0],ae[1],ae[2],ae[3]);
-			printf("%6d %6d %6d | ", phi, theta, psi);
-			printf("%6d %6d %6d | ", sp, sq, sr);
-			printf("%4d | %4ld | %6ld \n", bat_volt, temperature, pressure);
+						
+			//logData();
+			//printInputValues();
 
 			clear_timer_flag();
 		}
-
-		if (check_sensor_int_flag()) 
-		{
+		
+		//Writen by Yuhao Xuan
+		//date 11/5/2019
+		if (check_sensor_int_flag() && !rawFlag) 
+		{	
 			get_dmp_data();
-			run_filters_and_control();
+		} else {
+			//imu_init(false, 256);
+		}
+
+		
+		time_diff = get_time_us() - start_time_msg;
+
+		if (time_diff>600)
+		{
+			send_packet(pckType);
+			start_time_msg = get_time_us();
 		}
 	}	
 

@@ -7,7 +7,7 @@
 #include<string.h>
 
 //read the packet
-uint8_t read_packte()
+uint8_t read_packet()
 {
     bool headercheck = false;
     do{
