@@ -89,8 +89,8 @@ int main(void)
 
 	//pckType = 'v';
 
-	flushQueue(&rx_queue);
-	flushQueue(&tx_queue);
+	//flushQueue(&rx_queue);
+	//flushQueue(&tx_queue);
 
 	timestamp = get_time_us();
 	uint32_t start_time_msg = get_time_us();

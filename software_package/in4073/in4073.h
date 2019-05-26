@@ -81,12 +81,12 @@ void run_filters_and_control();
 int32_t	lift, roll, pitch, yaw;
 int32_t err_pitch, err_roll, err_lift, err_yaw;
 int32_t cali_p, cali_q, cali_r;
-int32_t cali_phi,cali_theta,cali_pressure
+int32_t cali_phi,cali_theta,cali_pressure;
 
 
-bool mode_change_acknowledged;
+
 int p_Flag;
-int rawFlag ;
+int rawFlag;
 int lost_connectFlag;
 uint8_t prevAcknowledgeMode;
 void (*mode_function)(void);
@@ -216,7 +216,7 @@ void pckType_check();
 bool brokenPckt_check();
 void header_brokenpckt();
 void restore_brokenPckt();
-bool headerCheck(uint8 h);
-uint8_t read_packte();
+bool headerCheck(uint8_t h);
+uint8_t read_packet();
 
 #endif // IN4073_H__

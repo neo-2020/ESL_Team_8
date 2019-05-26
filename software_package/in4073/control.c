@@ -32,7 +32,7 @@
 
 //height_control
 #define shift_rate_hgt 0
-#define shift_rate_gain_hgt
+#define shift_rate_gain_hgt 0
 
 
 //SPEED CONTROL
@@ -87,7 +87,7 @@ void roll_cal(){
 	lift = (((int32_t)-1 * (pc_drone.lift -127)*256)>>shift_lift);
 
 	err_roll = ((((int32_t)pc_drone.roll*256)/4)-((phi-cali_phi)>>shift_ang));
-	roll = ((kp1*err_roll)>>shift_ang_gain)-(kp2*(sq-cali_q)>>shift_rate)>>shift_rate_gain;
+	roll = ((kp1*err_roll)>>shift_ang_gain)-(kp2*((sq-cali_q)>>shift_rate)>>shift_rate_gain);
 
 	err_pitch = ((((int32_t)pc_drone.pitch*256)/4)-((theta-cali_theta)>>shift_ang));
 	pitch = ((kp1*err_pitch)>>shift_ang_gain) + (kp2*((sq-cali_q)>>shift_rate)>>shift_rate_gain);
