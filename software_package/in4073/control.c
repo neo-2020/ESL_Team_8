@@ -169,7 +169,14 @@ for (int i = 0; i < BUFFER_SIZE; i++)
         sum_say += c_say[i]; sum_sp += c_sp[i]; sum_sq += c_sq[i]; sum_sr += c_sr[i];
 
     }
+void manualModePacket()
+{
+			lift =  (int32_t)-1 * (pc_drone.lift - 127) * 256;
+			roll = (int32_t)(pc_drone.roll) * 256;
+			pitch = (int32_t)(pc_drone.pitch) * 256;
+			yaw = (int32_t)(pc_drone.yaw) * 256;
 
+}
 
 /*################### Rotor Control #####################
 Written by Yuhao*/
