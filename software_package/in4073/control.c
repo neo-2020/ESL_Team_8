@@ -126,6 +126,52 @@ void height_ctr(){
 	}
 
 
+// written by Sushant
+// BUFFER_SIZE size can be more. 600(say).
+
+
+void calibration(void)
+{
+    uint8_t i;
+    
+    static int16_t c_phi[BUFFER_SIZE], 
+    c_theta[BUFFER_SIZE], c_sax[BUFFER_SIZE], 
+    c_say[BUFFER_SIZE], c_sp[BUFFER_SIZE],
+    c_sq[BUFFER_SIZE], c_sr[BUFFER_SIZE];
+	
+	int32_t sum_phi = 0, sum_theta = 0, sum_sax = 0, sum_say = 0, sum_sp = 0, sum_sq = 0, sum_sr = 0;
+
+	// collecting the values by shifting them by one. 
+    for (i = 0; i < BUFFER_SIZE - 1; i++)
+    {
+        c_phi[i] = c_phi[i+1];
+        c_theta[i] = c_theta[i+1];
+        c_sax[i] = c_sax[i+1];
+        c_say[i] = c_say[i+1];
+        c_sp[i] = c_sp[i+1];
+        c_sq[i] = c_sq[i+1];
+        c_sr[i] = c_sr[i+1];
+		
+	}
+
+// pushing new value
+c_phi[BUFFER_SIZE-1] = phi; 
+c_theta[BUFFER_SIZE-1] = theta;
+c_sax[BUFFER_SIZE-1] = sax;
+c_say[BUFFER_SIZE-1] = say;
+c_sp[BUFFER_SIZE-1] = sp;
+c_sq[BUFFER_SIZE-1] = sq;
+c_sr[BUFFER_SIZE-1] = sr;
+
+// summing the input data
+for (i = 0; i < BUFFER_SIZE; i++)
+    {
+        sum_phi += c_phi[i]; sum_theta += c_theta[i]; sum_sax += c_sax[i]; 
+        sum_say += c_say[i]; sum_sp += c_sp[i]; sum_sq += c_sq[i]; sum_sr += c_sr[i];
+
+    }
+
+
 /*################### Rotor Control #####################
 Written by Yuhao*/
 void calculateMoterRPM(){
