@@ -93,7 +93,7 @@ void raw_mode(void){
 	get_raw_sensor_data();
 	filter_function();
 
-	raw_ctrl();
+	raw_ctr();
 	calculateMotorRPM();
 	update_motors();
 }
@@ -102,7 +102,7 @@ void raw_mode(void){
 // Function for height control (mode 7)
 void height_mode(void){
 	read_baro();
-	height_ctrl();
+	height_ctr();
 	calculateMotorRPM();
 	update_motors();
 }
@@ -156,7 +156,7 @@ void switch_mode(int mode_input){
 		case 7:
 
 			rawFlag=0;
-			mode_function = height_mode;
+			mode_function = &height_mode;
     }
 
 	pre_mode = mode_input;

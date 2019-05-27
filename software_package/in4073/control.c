@@ -132,7 +132,6 @@ void height_ctr(){
 
 void calibration(void)
 {
-    uint8_t i;
     
     static int16_t c_phi[BUFFER_SIZE], 
     c_theta[BUFFER_SIZE], c_sax[BUFFER_SIZE], 
@@ -142,7 +141,7 @@ void calibration(void)
 	int32_t sum_phi = 0, sum_theta = 0, sum_sax = 0, sum_say = 0, sum_sp = 0, sum_sq = 0, sum_sr = 0;
 
 	// collecting the values by shifting them by one. 
-    for (i = 0; i < BUFFER_SIZE - 1; i++)
+    for (int i = 0; i < BUFFER_SIZE - 1; i++)
     {
         c_phi[i] = c_phi[i+1];
         c_theta[i] = c_theta[i+1];
@@ -164,7 +163,7 @@ c_sq[BUFFER_SIZE-1] = sq;
 c_sr[BUFFER_SIZE-1] = sr;
 
 // summing the input data
-for (i = 0; i < BUFFER_SIZE; i++)
+for (int i = 0; i < BUFFER_SIZE; i++)
     {
         sum_phi += c_phi[i]; sum_theta += c_theta[i]; sum_sax += c_sax[i]; 
         sum_say += c_say[i]; sum_sp += c_sp[i]; sum_sq += c_sq[i]; sum_sr += c_sr[i];
@@ -174,7 +173,7 @@ for (i = 0; i < BUFFER_SIZE; i++)
 
 /*################### Rotor Control #####################
 Written by Yuhao*/
-void calculateMoterRPM(){
+void calculateMotorRPM(){
 	int32_t v0,v1,v2,v3;
 
 	int32_t a = 1;

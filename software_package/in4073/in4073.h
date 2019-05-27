@@ -95,8 +95,8 @@ uint8_t prevAcknowledgeMode;
 void (*mode_function)(void);
 
 
-void raw_ctrl(void);
-void height_ctrl(void);
+void raw_ctr(void);
+void height_ctr(void);
 void roll_cal(void);
 void yaw_cal(void);
 
@@ -122,6 +122,8 @@ void yaw_mode(void);
 void full_mode(void);
 void raw_mode(void);
 void height_mode(void);
+
+#define BUFFER_SIZE 200
 
 
 

@@ -103,8 +103,8 @@ int main(void)
 	//flushQueue(&rx_queue);
 	//flushQueue(&tx_queue);
 
-	timestamp = get_time_us();
-	uint32_t start_time_msg = get_time_us();
+	// timestamp = get_time_us();
+	// uint32_t start_time_msg = get_time_us();
 
 	while (!demo_done)
 	{
@@ -125,7 +125,7 @@ int main(void)
 			{
 				lost_connectFlag = 1;
 				mode = 1;
-				p_Flag = 1;
+				panic = 1;
 			}
 		}
 		/*		
