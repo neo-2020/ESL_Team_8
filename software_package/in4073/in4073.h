@@ -118,11 +118,12 @@ void safe_mode(void);
 void manual_mode(void);
 void calib_mode(void);
 void switch_mode(int);
-void yaw_mode(void);
+void yaw_mode(void);;
 void full_mode(void);
 void raw_mode(void);
 void height_mode(void);
-
+void calibration(void);
+void manualModePacket();
 #define BUFFER_SIZE 200
 
 
@@ -149,6 +150,7 @@ typedef struct {
 void init_queue(queue *q);
 void enqueue(queue *q, char x);
 char dequeue(queue *q);
+void flushQueue(queue *q);
 
 // UART
 #define RX_PIN_NUMBER  16
@@ -158,6 +160,7 @@ queue tx_queue;
 uint32_t last_correct_checksum_time;
 void uart_init(void);
 void uart_put(uint8_t);
+int uart_put_packet(int number);
 
 // TWI
 #define TWI_SCL	4
@@ -225,5 +228,8 @@ void header_brokenpckt();
 void restore_brokenPckt();
 bool headerCheck(uint8_t h);
 uint8_t read_packet();
+
+
+uint16_t compute_crc_1(const uint8_t *pck_data, uint32_t size, const uint16_t *pck_crc);
 
 #endif // IN4073_H__

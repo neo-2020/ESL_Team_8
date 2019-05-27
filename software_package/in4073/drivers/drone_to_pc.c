@@ -102,7 +102,7 @@ void header_brokenpckt()
 bool brokenPckt_check()
 {
     uint8_t * temp_pckt = brokenPck;
-    uint16_t crc = compute_crc(temp_pckt, 6, NULL);
+    uint16_t crc = compute_crc_1(temp_pckt, 6, NULL);
     uint16_t temp = ((brokenPck[6]<<8)| brokenPck[7]);
 
     return (temp == crc);
@@ -231,7 +231,7 @@ bool check_crc()
                         pc_drone.roll, pc_drone.pitch,
                         pc_drone.yaw, pc_drone.lift};
     uint8_t * temp = check;
-    uint16_t crc = compute_crc(temp, 6, NULL);
+    uint16_t crc = compute_crc_1(temp, 6, NULL);
     return (crc == pc_drone.crc);
 }
 
@@ -272,14 +272,14 @@ void motor_packet()
 //mode change packet
 void mode_change_packet()
 {
-    drone_pc.dt1_1 = (uint8_t)0;
-    drone_pc.dt1_2 = (uint8_t)0;
-    drone_pc.dt2_1 = (uint8_t)0;
-    drone_pc.dt2_2 = (uint8_t)0;
-    drone_pc.dt3_1 = (uint8_t)0;
-    drone_pc.dt3_2 = (uint8_t)0;
-    drone_pc.dt4_1 = (uint8_t)0;
-    drone_pc.dt4_2 = (uint8_t)0;
+    drone_pc.dt1_1 = (uint8_t) 0;
+    drone_pc.dt1_2 = (uint8_t) 0;
+    drone_pc.dt2_1 = (uint8_t) 0;
+    drone_pc.dt2_2 = (uint8_t) 0;
+    drone_pc.dt3_1 = (uint8_t) 0;
+    drone_pc.dt3_2 = (uint8_t) 0;
+    drone_pc.dt4_1 = (uint8_t) 0;
+    drone_pc.dt4_2 = (uint8_t) 0;
 }
 
 //packet type set
@@ -326,11 +326,13 @@ void packet_on_queue()
 //packet send
 void send_packet(char type)
 {
-    // if(tx_queue.count != 0)
-    // {
-    //     memset(tx_queue, 0, 256);
-    //     init_queue(tx_queue);
-    // }
+    if(tx_queue.count != 0)
+    {
+        flushQueue(&tx_queue);
+        //init_queue(tx_queue);
+    }
+
+    
 
     set_Header();
     set_pckType(type);
@@ -338,8 +340,8 @@ void send_packet(char type)
     int i=0;
     while(i<10)
     {
-        i = uart_put(i);
-        timestamp++;
+        i = uart_put_packet(i);
+       // timestamp++;
     }
 
 }
@@ -363,16 +365,8 @@ void send_mode_change()
     mode =0;
     bool ack = false;
     pckType = 'p';
-    if(tx_queue.count != 0)
-    {
-        memset(tx_queue, 0, 256);
-        init_queue(tx_queue);
-    }
-    if(tx_queue.count != 0)
-    {
-        memset(tx_queue, 0, 256);
-        init_queue(tx_queue);
-    }
+    flushQueue(&tx_queue);
+    flushQueue(&tx_queue);
     while(!ack)
     {
         mode =0;
@@ -387,14 +381,21 @@ void send_mode_change()
             }
         }
     }
-    if(tx_queue.count != 0)
-    {
-        memset(tx_queue, 0, 256);
-        init_queue(tx_queue);
-    }
-    if(tx_queue.count != 0)
-    {
-        memset(tx_queue, 0, 256);
-        init_queue(tx_queue);
-    }
+    flushQueue(&tx_queue);
+    flushQueue(&tx_queue);
+}
+uint16_t compute_crc_1(const uint8_t *pck_data, uint32_t size, const uint16_t *pck_crc)
+{
+	uint32_t i = 1;
+	uint16_t temp = (pck_crc == NULL) ? 0xffff : *pck_crc;
+
+	for(i=0;i<size;i++)
+	{
+		temp = (unsigned char)(temp >> 8) | (temp << 8);
+		temp ^= pck_data[i];
+		temp ^= (unsigned char)(temp & 0xff) >> 4;
+		temp ^= (temp << 8) << 4;
+		temp ^= ((temp & 0xff) <<4) <<1;
+	}
+	return temp;
 }

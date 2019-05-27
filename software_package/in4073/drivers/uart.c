@@ -82,3 +82,17 @@ void uart_init(void)
 	NVIC_SetPriority(UART0_IRQn, 3); // either 1 or 3, 3 being low. (sd present)
 	NVIC_EnableIRQ(UART0_IRQn);
 }
+
+int uart_put_packet(int number)
+{
+	// Disable intterrupts
+	NVIC_DisableIRQ(UART0_IRQn);
+
+	if (txd_available) {
+		txd_available = false; 
+		NRF_UART0->TXD = dequeue(&tx_queue);
+		number++;
+	}
+	NVIC_EnableIRQ(UART0_IRQn);
+	return number;	
+}

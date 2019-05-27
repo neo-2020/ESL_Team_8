@@ -10,11 +10,14 @@
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+#include<stdbool.h>
 #include <string.h>
 #include <inttypes.h>
-#include "queue.c"
+//#include "temp.h"
+#include "temp.c"
 
 #define HEADER 0b10100000
+#define JS_DEV	"/dev/input/js0"
 
 uint8_t mode =0;
 int panic =0;
@@ -290,19 +293,19 @@ void pck_create()
 		case 'u':
 		dec_value(10);
 		break;
-		case 'j';
+		case 'j':
 		inc_value(10);
 		break;
 		case 'i':
 		dec_value(20);
 		break;
-		case 'k';
+		case 'k':
 		inc_value(20);
 		break;
 		case 'o':
 		dec_value(30);
 		break;
-		case 'l';
+		case 'l':
 		inc_value(30);
 		break;
 		default:
@@ -333,6 +336,20 @@ void pck_send()
 */
 uint8_t timestamp;
 uint32_t kp1, kp2, kp;
+
+
+
+bool checkHeader(uint8_t temp)
+{
+	bool flag = false;
+	uint8_t check = temp;
+	check = check >> 4;
+	if(check == 0b00001010)
+	{
+		flag = true;
+	}
+	return flag;
+}
 
 uint8_t read_pckt()
 {
@@ -370,7 +387,7 @@ uint8_t read_pckt()
 		motor[3] = (int16_t)(drone_to_pc.dt4_1 << 8) | drone_to_pc.dt4_2;
 		if(mode != 5)
 		{
-			fprint( stderr, "Mode: %d motor[0]: %d motor[1]: %d motor[2]: %d motor[3]: %d \n", tempMode, motor[0], motor[1], motor[2], motor[3]);
+			fprintf( stderr, "Mode: %d motor[0]: %d motor[1]: %d motor[2]: %d motor[3]: %d \n", tempMode, motor[0], motor[1], motor[2], motor[3]);
 		}
 	}
 	else if(drone_to_pc.pcktType == 'p')
@@ -379,7 +396,7 @@ uint8_t read_pckt()
 		panic = false;
 		pck_create();
 		pck_send();
-		fprintf(stderr, "%s %d\n", " Switching Mode" mode);
+		fprintf(stderr, "%s %d\n", " Switching Mode", mode);
 	}
 	else if(drone_to_pc.pcktType == 'o')
 	{
@@ -399,21 +416,9 @@ uint8_t read_pckt()
 		kp1 = (uint8_t) drone_to_pc.dt3_2;
 		kp2 = (uint8_t) drone_to_pc.dt4_1;
 		uint16_t temp_var = (uint16_t) (drone_to_pc.dt1_1 << 8) | drone_to_pc.dt1_2;
-		fprintf(stderr, "MODE: %d   motor[0]: %d motor[1]: %d motor[2]: %d motor[3]: %d", mode_b, motor[0], motor[1], motor[2], motor[3])
+		fprintf(stderr, "MODE: %d   motor[0]: %d motor[1]: %d motor[2]: %d motor[3]: %d", tempMode, motor[0], motor[1], motor[2], motor[3]);
 		fprintf(stderr, " kp: %d, kp1: %d, kp2: %d \n", kp, kp1, kp2);
 	}
-}
-
-bool checkHeader(uint8_t temp)
-{
-	bool flag = false;
-	uint8_t check = h;
-	check = check >> 4;
-	if(check == 0b00001010)
-	{
-		flag = true;
-	}
-	return flag;
 }
 
 //Keyboard mapping
@@ -582,7 +587,7 @@ int main(int argc, char **argv)
 {
 	int	c;
 
-	struct js_inp jinp;
+	struct js_event jinp;
 
 	if(open(JS_DEV, O_RDONLY) < 0)
 	{
@@ -596,6 +601,8 @@ int main(int argc, char **argv)
 
 	term_initio();
 	rs232_open();
+
+	fcntl(c, F_SETFL, O_RDONLY);
 
 	term_puts("Type ^C to exit\n");
 
@@ -637,23 +644,26 @@ int main(int argc, char **argv)
 			{
 				arrowinp = term_getchar_nb();
 				//keyboard mapping
+				key_data(arrowinp);
 			}
 			else
 			{
 				//keyboard mapping else
+				key_data(27);
 			}
 			
 		}
 		else
 		{
 			//keyboardmapping - keyinp
+			key_data(keyinp);
 		}
 		
 		//input from joystick
-		while(read(fd, &js, sizeof(struct js_inp)) == sizeof(struct js_inp))
+		while(read(c, &jinp, sizeof(struct js_event)) == sizeof(struct js_event))
 		{
 			fprintf(stderr, ".");
-			switch(jinp.type & ~JS_EVENT_INIT)
+			switch(jinp.type & ~ JS_EVENT_INIT)
 			{
 				case JS_EVENT_BUTTON:
 				button[jinp.number] = jinp.value;

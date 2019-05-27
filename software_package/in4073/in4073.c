@@ -90,7 +90,7 @@ int main(void)
 	spi_flash_init();
 	//ble_init();
 
-	uint32_t time_diff;
+	//uint32_t time_diff;
 	uint32_t counter = 0;
 	uint32_t no_packet = 0;
 	
@@ -168,13 +168,13 @@ int main(void)
 		}
 
 		
-		time_diff = get_time_us() - start_time_msg;
+		//time_diff = get_time_us() - start_time_msg;
 
-		if (time_diff>600)
-		{
-			send_packet(pckType);
-			start_time_msg = get_time_us();
-		}
+		// if (time_diff>600)
+		// {
+		 	send_packet(pckType);
+		// 	start_time_msg = get_time_us();
+		// }
 	}	
 
 	printf("\n\t Goodbye \n\n");

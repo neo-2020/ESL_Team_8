@@ -46,7 +46,7 @@ void panic_mode(void){
 // Function for manual mode (mode2)
 void manual_mode(void){
     //TODO Function name not certain
-    setting_packet_values_manual_mode();
+    manualModePacket();
 	calculateMotorRPM();
 	update_motors();
 }

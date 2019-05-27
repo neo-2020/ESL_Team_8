@@ -8,3 +8,4 @@ typedef struct {
 void init_queue(queue *q);
 void enqueue(queue *q, char x);
 char dequeue(queue *q);
+void flushQueue(queue *q);

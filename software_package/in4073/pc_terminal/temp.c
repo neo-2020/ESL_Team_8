@@ -1,4 +1,15 @@
-#include "ẗemp.h"
+//#include "temp.h"
+#include<string.h>
+#define QUEUE_SIZE 256
+typedef struct {
+	uint8_t Data[QUEUE_SIZE];
+	uint16_t first,last;
+  	uint16_t count; 
+} queue;
+void init_queue(queue *q);
+void enqueue(queue *q, char x);
+char dequeue(queue *q);
+void flushQueue(queue *q);
 
 void init_queue(queue *q){
 	
@@ -18,6 +29,18 @@ char dequeue(queue *q){
 
 	char x = q->Data[ q->first ];
 	q->first = (q->first + 1) % QUEUE_SIZE;
+	if(q->count < 1)
+	{
+		flushQueue(q);
+	}
+	else
+	{
 	q->count -= 1;
+	}
 	return x;
+}
+
+void flushQueue(queue *q){
+	memset(q->Data, 0, QUEUE_SIZE);
+	init_queue(q);
 }

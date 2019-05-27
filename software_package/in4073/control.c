@@ -169,6 +169,7 @@ for (int i = 0; i < BUFFER_SIZE; i++)
         sum_say += c_say[i]; sum_sp += c_sp[i]; sum_sq += c_sq[i]; sum_sr += c_sr[i];
 
     }
+}
 void manualModePacket()
 {
 			lift =  (int32_t)-1 * (pc_drone.lift - 127) * 256;
