@@ -59,7 +59,18 @@ void process_key(uint8_t c)
 			nrf_gpio_pin_toggle(RED);
 	}
 }
+/*
+void printInputValues(void)
+{
+	printf("%10ld | ", get_time_us());
+	printf("%3d %3d %3d %3d | ",ae[0],ae[1],ae[2],ae[3]);
+	printf("%6d %6d %6d | ", phi, theta, psi);
+	printf("%6d %6d %6d | ", sp, sq, sr);
+	printf("%4d | %4ld | %6ld \n", bat_volt, temperature, pressure);
+}
+*/
 
+ 
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  * 

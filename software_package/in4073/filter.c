@@ -129,8 +129,8 @@ void filter_function()
     temp_estimated_phi = temp_estimated_phi - (fixdiv2(ephi,c1phi));
    // phi = phi - (phi - sphi)/c1;
     pb = pb + (fixdiv2(ephi,c2phi));
-   	estimated_phi = fix2float2(temp_estimated_phi); //scale down estimated_phi to the original value
-	estimated_p = fix2float2(temp_estimated_p); //scale down estimated_p to the original value
+   	phi_est = fix2float2(temp_estimated_phi); //scale down estimated_phi to the original value
+	p_est = fix2float2(temp_estimated_p); //scale down estimated_p to the original value
 
 
   //sq and sax is multiplied by 256, so that we do not need to scale down bq.
@@ -141,8 +141,8 @@ void filter_function()
 	etheta = temp_estimated_theta - temp_sax;
 	temp_estimated_theta = temp_estimated_theta - (fixdiv2(etheta,c1theta));
 	bq = bq + (fixdiv2(ephi,c2theta));
-	estimated_theta = float2fix2(temp_estimated_theta); //scale down estimated_theta to the original value
-	estimated_q = float2fix2(temp_estimated_q); //scale down estimated_q to the original value
+	theta_est = float2fix2(temp_estimated_theta); //scale down estimated_theta to the original value
+	q_est = float2fix2(temp_estimated_q); //scale down estimated_q to the original value
     
 }    
     

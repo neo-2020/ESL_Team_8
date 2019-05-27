@@ -302,7 +302,7 @@ void set_pckType(char temp)
     case 'o':
     break;
     case 'k':
-    kp_packet()
+    kp_packet();
     pckType = 'm';
     break;
     }
@@ -383,6 +383,7 @@ void send_mode_change()
             {
                 ack = true;
                 //change mode
+                switch_mode(mode);
             }
         }
     }

@@ -77,12 +77,15 @@ int16_t motor[4],ae[4];
 int32_t kp, kp1, kp2;
 int32_t kp_yaw, kp1_roll, kp2_roll, kp1_pitch, kp2_pitch;
 int32_t pitch_error, yaw_error, roll_error, lift_error;
-void run_filters_and_control();
 int32_t	lift, roll, pitch, yaw;
 int32_t err_pitch, err_roll, err_lift, err_yaw;
 int32_t cali_p, cali_q, cali_r;
 int32_t cali_phi,cali_theta,cali_pressure;
 
+
+void calculateMotorRPM(void);
+void run_filters_and_control();
+void update_motors(void);
 
 
 int p_Flag;
@@ -105,6 +108,8 @@ int16_t theta_est;
 int16_t phi_est;
 
 int16_t r_butter;
+
+void filter_function(void);
 //mode
 uint8_t pre_mode;
 //void switch_mode(void);
