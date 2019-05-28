@@ -228,7 +228,7 @@ void header_brokenpckt();
 void restore_brokenPckt();
 bool headerCheck(uint8_t h);
 uint8_t read_packet();
-
+void send_panicPckt();
 
 uint16_t compute_crc_1(const uint8_t *pck_data, uint32_t size, const uint16_t *pck_crc);
 

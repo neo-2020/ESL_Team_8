@@ -328,6 +328,18 @@ void pck_send()
 	
 }
 
+//send panic packet
+void send_panicPckt()
+{
+	set_header();
+	pc_to_drone.roll = pc_to_drone.head;
+	pc_to_drone.pitch = pc_to_drone.head;
+	pc_to_drone.yaw = pc_to_drone.head;
+	pc_to_drone.lift = pc_to_drone.head;
+	set_crc();
+	pck_send();
+}
+
 /*----------------------------------------------------------------
 * Packet Drone to PC : 1 byte (header & Mode); 1 byte (packet type);
 * 8 bytes (data) = 10 bytes
@@ -437,6 +449,7 @@ int key_data(char c)
 		break;
 		case '0':
 		mode = 0;
+		
 		break;
 		case '1':
 		if(mode != 0)
@@ -586,7 +599,7 @@ void inc_value(int8_t v)
 int main(int argc, char **argv)
 {
 	int	c;
-
+	#ifdef JOYSTICK_CONNECTED
 	struct js_event jinp;
 
 	if(open(JS_DEV, O_RDONLY) < 0)
@@ -594,7 +607,7 @@ int main(int argc, char **argv)
 		perror("joysticktest");
 		exit(1);
 	}
-
+#endif
 	pckType = 'n';
 
 	term_puts("\nTerminal program - Embedded Real-Time Systems\n");
@@ -611,6 +624,7 @@ int main(int argc, char **argv)
 	while ((c = rs232_getchar_nb()) != -1)
 		fputc(c,stderr);
 
+	init_queue(&recQu);
 	int count =0;
 	/* send & receive
 	 */
@@ -621,9 +635,10 @@ int main(int argc, char **argv)
 
 		// if ((c = rs232_getchar_nb()) != -1)
 		// 	term_putchar(c);
-
+	rs232_getchar_nb();
 		if(panic)
 		{
+			send_panicPckt();
 			//panic packet create
 		}
 		else if(count > 50)
@@ -631,6 +646,7 @@ int main(int argc, char **argv)
 			count =0;
 			pck_create();
 			pck_send();
+			pckType = 'n';
 		}
 		count++;
 
@@ -660,6 +676,7 @@ int main(int argc, char **argv)
 		}
 		
 		//input from joystick
+		#ifdef JOYSTICK_CONNECTED
 		while(read(c, &jinp, sizeof(struct js_event)) == sizeof(struct js_event))
 		{
 			fprintf(stderr, ".");
@@ -673,7 +690,7 @@ int main(int argc, char **argv)
 				break;
 			}
 		}
-
+#endif
 		//key input + js input
 		for(int i=0;i<4;i++)
 		{
@@ -690,7 +707,18 @@ int main(int argc, char **argv)
 				inp[i] = j_inp[i] + k_inp[i];
 			}
 		}
-
+#ifdef JOYSTICK_DEBUG
+printf("\n");
+for(int i=0;i<6;i++)
+{
+	printf("%6d", j_inp[i]);
+}
+fprintf(" | ");
+for(int i=0;i<12;i++)
+{
+	printf("%d", button[i]);
+}
+#endif
 		//fire button
 		if(button[0])
 		{
